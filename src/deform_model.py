@@ -139,6 +139,7 @@ class Deform_Model(nn.Module):
         uv_vertices = uv_vertices_flaten[self.uvmask_flaten_idx].unsqueeze(0)
 
         verts_final = uv_vertices + uv_vertices_deforms
+        # verts_final = uv_vertices
 
         # conduct mask
         verts_final = verts_final[:, self.uv_head_idx, :]

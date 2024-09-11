@@ -112,6 +112,23 @@ if __name__ == "__main__":
         render_pkg = render(viewpoint_cam, gaussians, ppt, background)
         image = render_pkg["render"]
 
+        # debug
+        if iteration % 10000 ==0:
+            gnum = gaussians.get_gauss_num()
+            print("gauss num: ", gnum)
+        # debug:vis
+        if iteration % 100 == 0:
+            gt = viewpoint_cam.original_image[:3, :, :]
+            gt2 = gt.permute([1, 2, 0])
+            gt2 = gt2[:, :, [2, 1, 0]]
+            gt2 = (gt2.clamp(0, 1) * 255).detach().cpu().numpy().astype(np.uint8)
+            cv2.imshow("gt", gt2)
+            img2 = image.permute([1, 2, 0])
+            img2 = img2[:, :, [2, 1, 0]]
+            img2 = (img2.clamp(0, 1) * 255).detach().cpu().numpy().astype(np.uint8)
+            cv2.imshow("rendering", img2)
+            cv2.waitKey(1)
+
         # Loss
         gt_image = viewpoint_cam.original_image
         mouth_mask = viewpoint_cam.mouth_mask
@@ -124,6 +141,14 @@ if __name__ == "__main__":
         gt_image_percep = normalize_for_percep(gt_image*head_mask)
         if iteration>mid_num:
             loss_G = torch.mean(percep_module.forward(image_percep, gt_image_percep))*0.05
+
+        # # debug
+        # img3 = gt_image * head_mask
+        # img3 = img3.permute([1, 2, 0])
+        # img3 = img3[:, :, [2, 1, 0]]
+        # img3 = (img3.clamp(0, 1) * 255).detach().cpu().numpy().astype(np.uint8)
+        # cv2.imshow("gt*head", img3)
+        # cv2.waitKey(0)
 
         loss = loss_huber*1 + loss_G*1
 

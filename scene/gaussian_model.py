@@ -93,7 +93,8 @@ class GaussianModel:
         self.xyz_gradient_accum = xyz_gradient_accum
         self.denom = denom
         self.optimizer.load_state_dict(opt_dict)
-
+    def get_gauss_num(self):
+        return self._xyz.shape[0]
     @property
     def get_scaling(self):
         return self.scaling_activation(self._scaling)
